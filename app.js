@@ -2,6 +2,20 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var path = require("path");
+var jsonfile = require("jsonfile");
+
+// Läs in som jsonfil
+var file = "cars.json";
+var cars = [];
+
+jsonfile.readFile(file, function(err, obj) {
+    if(err) {
+        console.log(err);
+    } else {
+        console.log(obj),
+        cars = obj;
+    }
+})
 
 // Skapa instans av expressbiblioteket
 var app = express();
@@ -13,8 +27,8 @@ app.use(bodyParser.urlencoded( { extended: false}));
 // Skapa statisk sökväg
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Skapar data i array
-var cars = [
+// Skapar data i array, detta användes innan vi sparade i jsonfil
+/*var cars = [
     {
         id: 1,
         make: "Saab",
@@ -33,7 +47,7 @@ var cars = [
         model: "Kadett",
         color: "Blå"
     }
-]
+]*/
 
 // Router, REST-api för data
 
@@ -58,6 +72,9 @@ app.post("/api/data/add", function(req, res){
     // Lägga till i arrayen
     cars.push(newCar);
 
+    // Anropa skriv till fil
+    saveFile();
+
     //res.send({"message": "Lägger till data..."});
 
     res.redirect("/");
@@ -74,8 +91,20 @@ app.delete("/api/data/delete/:id", function(req, res){
         }
     }
 
+    // Anropa skriv till fil
+    saveFile();
+
     res.send({"message": "Raderar data med id" + deleteId});
 });
+
+// Spara till JSON-fil
+function saveFile()  {
+    jsonfile.writeFile(file,cars, function(err) {
+        console.log(err);
+
+    });
+}
+
 // Plocka fram högsta id
 function getNextId(arr) {
     var max =0;
