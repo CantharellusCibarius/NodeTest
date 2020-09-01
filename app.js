@@ -101,7 +101,6 @@ app.delete("/api/data/delete/:id", function(req, res){
 function saveFile()  {
     jsonfile.writeFile(file,cars, function(err) {
         console.log(err);
-
     });
 }
 
